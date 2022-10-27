@@ -3,6 +3,7 @@
 #include <vulkan/vulkan.h>
 
 #include <iostream>
+#include <fstream>
 #include <stdexcept>
 #include <cstdlib>
 #include <vector>
@@ -83,31 +84,52 @@ private:
  	VkExtent2D swapChainExtent;
  	std::vector<VkImageView> swapChainImageViews;
 
+ 	VkPipelineLayout pipelineLayout;
+	VkRenderPass renderPass;
+ 	VkPipeline graphicsPipeline;
+ 	std::vector<VkFramebuffer> swapChainFramebuffers;
  	
+ 	VkCommandPool commandPool;
+ 	VkCommandBuffer commandBuffer;
 
-	void initWindow();
- 	void createSurface();
- 	void createImageViews();
- 	void createGraphicsPipeline();
-	void initVulkan();
-	void mainLoop();
-	void cleanup();
-	void createInstance();
-	 static bool checkValidationLayerSupport();
-	std::vector<const char*> getRequiredExtensions() const;
+ 	VkSemaphore imageAvailableSemaphore;
+ 	VkSemaphore renderFinishedSemaphore;
+ 	VkFence inFlightFence;
+
  	
-	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+	 void initWindow();
+ 	 void createSurface();
+ 	 void createImageViews();
+ 	 void createGraphicsPipeline();
+	 VkShaderModule createShaderModule(const std::vector<char>& code);
+	 void createRenderPass();
+	 void createFramebuffers();
+	 void createCommandPool();
+	 void createCommandBuffer();
+	 void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+	 void createSyncObjects();
+	 void initVulkan();
+	 void drawFrame();
+	 void mainLoop();
+	 void cleanup();
+	 void createInstance();
+	 static bool checkValidationLayerSupport();
+	 std::vector<const char*> getRequiredExtensions() const;
+ 	
+	 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
 		VkDebugUtilsMessageTypeFlagsEXT message_type, const VkDebugUtilsMessengerCallbackDataEXT* call_back_data, void* user_data);
-	void setupDebugMessenger();
+	 void setupDebugMessenger();
 	 static void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
 	 static void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
-	void pickPhysicalDevice();
-	void createLogicalDevice();
-	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+	 void pickPhysicalDevice();
+	 void createLogicalDevice();
+	 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 	 bool isDeviceSuitable(VkPhysicalDevice device);
 	 bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 	 SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) const;
 	 VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 	 void createSwapChain();
  };
+
