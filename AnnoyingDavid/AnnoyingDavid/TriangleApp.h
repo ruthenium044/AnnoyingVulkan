@@ -8,14 +8,19 @@
 #include <vector>
 
 #include <optional>
+#include <set>
+
+#include <cstdint> 
+#include <limits>
+#include <algorithm> 
+
+#define VK_USE_PLATFORM_WIN32_KHR
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
+const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
+const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
-const std::vector<const char*> validationLayers = 
-{
-	"VK_LAYER_KHRONOS_validation"
-};
 
 #ifdef NDEBUG
 	const bool enableValidationLayers = false;
@@ -29,14 +34,23 @@ static VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugU
 struct QueueFamilyIndices
 {
 	std::optional<uint32_t> graphicsFamily;
-
+	std::optional<uint32_t> presentFamily;
+	
 	bool isComplete() 
 	{
-		return graphicsFamily.has_value();
+		return graphicsFamily.has_value() &&
+        presentFamily.has_value();
+
 	}
-
-
 };
+
+struct SwapChainSupportDetails
+{
+	VkSurfaceCapabilitiesKHR capabilities;
+	std::vector<VkSurfaceFormatKHR> formats;
+	std::vector<VkPresentModeKHR> presentModes;
+};
+
 
  class TriangleApp 
  {
@@ -51,39 +65,49 @@ struct QueueFamilyIndices
 
 private:
 	SDL_Window* window = nullptr;
+ 	VkSurfaceKHR surface = VK_NULL_HANDLE;
+ 	
 	bool isRunning = true;
 	VkInstance instance;
 
 	VkDebugUtilsMessengerEXT debugMessenger;
 
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-	
+ 	VkDevice device = VK_NULL_HANDLE;
+ 	VkQueue graphicsQueue;
+ 	VkQueue presentQueue;
+ 	
+ 	VkSwapchainKHR swapChain;
+ 	std::vector<VkImage> swapChainImages;
+ 	VkFormat swapChainImageFormat;
+ 	VkExtent2D swapChainExtent;
+ 	std::vector<VkImageView> swapChainImageViews;
+
+ 	
+
 	void initWindow();
-
+ 	void createSurface();
+ 	void createImageViews();
+ 	void createGraphicsPipeline();
 	void initVulkan();
-
 	void mainLoop();
-
 	void cleanup();
-
 	void createInstance();
-
-	bool checkValidationLayerSupport();
-
-	std::vector<const char*> getRequiredExtensions();
-
-	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity, VkDebugUtilsMessageTypeFlagsEXT message_type, const VkDebugUtilsMessengerCallbackDataEXT* call_back_data, void* user_data);
-
+	 static bool checkValidationLayerSupport();
+	std::vector<const char*> getRequiredExtensions() const;
+ 	
+	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+		VkDebugUtilsMessageTypeFlagsEXT message_type, const VkDebugUtilsMessengerCallbackDataEXT* call_back_data, void* user_data);
 	void setupDebugMessenger();
-
-	void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
-
-	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+	 static void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
+	 static void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
 	void pickPhysicalDevice();
-
 	void createLogicalDevice();
-
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-
+	 bool isDeviceSuitable(VkPhysicalDevice device);
+	 bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+	 SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) const;
+	 VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+	 void createSwapChain();
  };

@@ -148,12 +148,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AnnoyingDavid.cpp" />
-    <ClCompile Include="QueueFamilyIndices.cpp" />
     <ClCompile Include="TriangleApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="QueueFamilyIndices.h" />
     <ClInclude Include="TriangleApp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="compile.bat" />
+    <Content Include="shader.frag" />
+    <Content Include="shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
