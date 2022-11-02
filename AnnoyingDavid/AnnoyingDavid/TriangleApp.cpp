@@ -4,6 +4,7 @@
 #include "stb_image.h"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
+#include "Utils.h"
 
 void TriangleApp::mainLoop()
 {
@@ -56,6 +57,7 @@ void TriangleApp::initVulkan()
 	createLogicalDevice();
 	
 	createSwapChain();
+	
 	createImageViews();
 	createRenderPass();
 	createDescriptorSetLayout();
@@ -64,13 +66,16 @@ void TriangleApp::initVulkan()
 	createColorResources();
 	createDepthResources();
 	createFramebuffers();
-	createTextureImage();
+	
+	createTextureImage(TEXTURE_PATH.c_str());
 	createTextureImageView();
 	createTextureSampler();
-	loadModel();
+	loadModel(MODEL_PATH.c_str());
+	
 	createVertexBuffer();
 	createIndexBuffer();
 	createUniformBuffers();
+	
 	createDescriptorPool();
 	createDescriptorSets();
 	createCommandBuffer();
@@ -85,7 +90,8 @@ void TriangleApp::cleanup()
 	vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 	vkDestroyRenderPass(device, renderPass, nullptr);
 
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	{
 		vkDestroyBuffer(device, uniformBuffers[i], nullptr);
 		vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
 	}
@@ -106,17 +112,18 @@ void TriangleApp::cleanup()
 	vkDestroyBuffer(device, vertexBuffer, nullptr);
 	vkFreeMemory(device, vertexBufferMemory, nullptr);
 
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	{
 		vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
 		vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
 		vkDestroyFence(device, inFlightFences[i], nullptr);
 	}
 
 	vkDestroyCommandPool(device, commandPool, nullptr);
-
 	vkDestroyDevice(device, nullptr);
 
-	if (enableValidationLayers) {
+	if (enableValidationLayers)
+	{
 		DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
 	}
 
@@ -199,10 +206,10 @@ void TriangleApp::processInput(SDL_KeyboardEvent* key)
 	switch (key->keysym.sym)
 	{
 	case SDLK_a:
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		break;
 	case SDLK_d:
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		break;
 	case SDLK_w:
 		cameraPos += cameraSpeed * cameraFront;
@@ -213,7 +220,6 @@ void TriangleApp::processInput(SDL_KeyboardEvent* key)
 	default: ;
 	}
 }
-
 
 void TriangleApp::createInstance()
 {
@@ -499,7 +505,8 @@ QueueFamilyIndices TriangleApp::findQueueFamilies(VkPhysicalDevice device)
 	return indices;
 }
 
-VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
+VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+	const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
 	auto func = (PFN_vkCreateDebugUtilsMessengerEXT)
 		vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -740,6 +747,11 @@ void TriangleApp::createImageViews()
 	}
 }
 
+void TriangleApp::createTextureImageView()
+{
+	textureImageView = createImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+}
+
 VkImageView TriangleApp::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags,
 	uint32_t mipLevels)
 {
@@ -762,27 +774,10 @@ VkImageView TriangleApp::createImageView(VkImage image, VkFormat format, VkImage
 	return imageView;
 }
 
-static std::vector<char> readFile(const std::string& filename)
-{
-	std::ifstream file(filename, std::ios::ate | std::ios::binary);
-	
-	if (!file.is_open()) {
-		throw std::runtime_error("failed to open file!");
-	}
-	size_t fileSize = (size_t) file.tellg();
-	std::vector<char> buffer(fileSize);
-
-	file.seekg(0);
-	file.read(buffer.data(), fileSize);
-	file.close();
-
-	return buffer;
-}
-
 void TriangleApp::createGraphicsPipeline()
 {
-		auto vertShaderCode = readFile("shaders/vert.spv");
-        auto fragShaderCode = readFile("shaders/frag.spv");
+		auto vertShaderCode = Utils::readFile("shaders/vert.spv");
+        auto fragShaderCode = Utils::readFile("shaders/frag.spv");
 
         VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
         VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -1202,7 +1197,8 @@ void TriangleApp::createVertexBuffer()
 	memcpy(data, vertices.data(), (size_t) bufferSize);
 	vkUnmapMemory(device, stagingBufferMemory);
 
-	createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
+	createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
 	
 	copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
 
@@ -1239,20 +1235,16 @@ void TriangleApp::createIndexBuffer()
 	VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-    VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer,
-    stagingBufferMemory);
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+    VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
     
     void* data;
     vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
     memcpy(data, indices.data(), (size_t) bufferSize);
     vkUnmapMemory(device, stagingBufferMemory);
     
-    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-    VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer,
-    indexBufferMemory);
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
     
     copyBuffer(stagingBuffer, indexBuffer, bufferSize);
     vkDestroyBuffer(device, stagingBuffer, nullptr);
@@ -1266,7 +1258,7 @@ void TriangleApp::createDescriptorSetLayout()
 	uboLayoutBinding.descriptorCount = 1;
 	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	uboLayoutBinding.pImmutableSamplers = nullptr;
-	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS;
 
 	VkDescriptorSetLayoutBinding samplerLayoutBinding{};
 	samplerLayoutBinding.binding = 1;
@@ -1370,10 +1362,11 @@ void TriangleApp::createDescriptorSets()
 	}	
 }
 
-void TriangleApp::createTextureImage()
+void TriangleApp::createTextureImage(const char* filepath)
 {
 	int texWidth, texHeight, texChannels;
-	stbi_uc* pixels = stbi_load(TEXTURE_PATH.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+	stbi_uc* pixels = stbi_load(filepath, &texWidth, &texHeight,
+		&texChannels, STBI_rgb_alpha);
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 	mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
 	
@@ -1449,38 +1442,6 @@ void TriangleApp::createImage(uint32_t width, uint32_t height, uint32_t mipLevel
 	vkBindImageMemory(device, image, imageMemory, 0);
 }
 
-void TriangleApp::updateUniformBuffer(uint32_t currentImage)
-{
-	static auto startTime = std::chrono::high_resolution_clock::now();
-	auto currentTime = std::chrono::high_resolution_clock::now();
-	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-	float currentFrame = time;
-	deltaTime = currentFrame - lastFrame;
-	lastFrame = currentFrame;
-
-	//camera
-	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-	glm::mat4 rotateToCam = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f),
-	glm::vec3(-1.0f, 0.0f, 0.0f)) *
-		glm::rotate(glm::mat4(1.0f), glm::radians(180.0f),
-	glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 rotateAround = glm::rotate(glm::mat4(1.0f), glm::radians(time * 90.0f),
-	glm::vec3(0.0f, 0.0f, 1.0f));
-	
-	UniformBufferObject ubo{};
-	ubo.model = rotateToCam * rotateAround;
-	ubo.view = view;
-	ubo.proj = glm::perspective(glm::radians(-45.0f),
-		swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 100.0f);
-	ubo.proj[1][1] *= -1;
-
-	void* data;
-	vkMapMemory(device, uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);
-	memcpy(data, &ubo, sizeof(ubo));
-	vkUnmapMemory(device, uniformBuffersMemory[currentImage]);
-}
-
 VkCommandBuffer TriangleApp::beginSingleTimeCommands()
 {
 	VkCommandBufferAllocateInfo allocInfo{};
@@ -1546,9 +1507,9 @@ void TriangleApp::transitionImageLayout(VkImage image, VkFormat format,
 	barrier.subresourceRange.levelCount = mipLevels;
 	barrier.subresourceRange.baseArrayLayer = 0;
 	barrier.subresourceRange.layerCount = 1;
-	barrier.srcAccessMask = 0; // TODO
-	barrier.dstAccessMask = 0; // TODO
-	vkCmdPipelineBarrier(commandBuffer, 0 /* TODO */, 0 /* TODO */, 0,
+	barrier.srcAccessMask = 0; 
+	barrier.dstAccessMask = 0;
+	vkCmdPipelineBarrier(commandBuffer, 0 , 0 , 0,
 		0,nullptr, 0, nullptr,
 		1, &barrier);
 
@@ -1612,11 +1573,6 @@ void TriangleApp::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t wid
 
 	vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 	endSingleTimeCommands(commandBuffer);
-}
-
-void TriangleApp::createTextureImageView()
-{
-	textureImageView = createImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 }
 
 void TriangleApp::createTextureSampler()
@@ -1687,18 +1643,20 @@ VkFormat TriangleApp::findDepthFormat()
 		VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
-void TriangleApp::loadModel()
+void TriangleApp::loadModel(const char* filepath)
 {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
 	std::string warn, err;
 
-	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str()))
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath))
 	{
 		throw std::runtime_error(warn + err);
 	}
 
+	vertices.clear();
+	indices.clear();
 	std::unordered_map<Vertex, uint32_t> uniqueVertices{};
 
 	for (const auto& shape : shapes)
@@ -1706,30 +1664,37 @@ void TriangleApp::loadModel()
 		for (const auto& index : shape.mesh.indices)
 		{
 			Vertex vertex{};
-
-			vertex.pos = {
-				attrib.vertices[3 * index.vertex_index + 0],
-				attrib.vertices[3 * index.vertex_index + 1],
-				attrib.vertices[3 * index.vertex_index + 2]
-			};
-
-			vertex.texCoord = {
-				attrib.texcoords[2 * index.texcoord_index + 0],
-				1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-			};
-
+			if (index.vertex_index >= 0)
+			{
+				vertex.pos = {
+					attrib.vertices[3 * index.vertex_index + 0],
+					attrib.vertices[3 * index.vertex_index + 1],
+					attrib.vertices[3 * index.vertex_index + 2]};
+			}
+			if (index.normal_index >= 0)
+			{
+				vertex.normal = {
+					attrib.normals[3 * index.vertex_index + 0],
+					attrib.normals[3 * index.vertex_index + 1],
+					attrib.normals[3 * index.vertex_index + 2]};
+			}
+			if (index.texcoord_index >= 0)
+			{
+				vertex.texCoord = {
+					attrib.texcoords[2 * index.texcoord_index + 0],
+					1.0f - attrib.texcoords[2 * index.texcoord_index + 1]};
+			}
 			vertex.color = {1.0f, 1.0f, 1.0f};
-
-			if (uniqueVertices.count(vertex) == 0) {
+			
+			if (uniqueVertices.count(vertex) == 0)
+			{
 				uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
 				vertices.push_back(vertex);
 			}
-
 			indices.push_back(uniqueVertices[vertex]);
 		}
 	}
 }
-
 
 void TriangleApp::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 {
@@ -1833,11 +1798,50 @@ VkSampleCountFlagBits TriangleApp::getMaxUsableSampleCount()
 	return VK_SAMPLE_COUNT_1_BIT;
 }
 
-void TriangleApp::createColorResources() {
+void TriangleApp::createColorResources()
+{
 	VkFormat colorFormat = swapChainImageFormat;
 
 	createImage(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, colorFormat,
 		VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory);
 	colorImageView = createImageView(colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+}
+
+void TriangleApp::updateUniformBuffer(uint32_t currentImage)
+{
+	static auto startTime = std::chrono::high_resolution_clock::now();
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+	float currentFrame = time;
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	//camera
+	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	glm::mat4 rotateToCam =
+		glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
+		glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)) *
+		glm::rotate(glm::mat4(1.0f), glm::radians(160.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	
+	glm::mat4 rotateAround = glm::rotate(glm::mat4(1.0f), glm::radians(time * 15.0f),
+	glm::vec3(0.0f, 0.0f, 1.0f));
+
+	glm::mat4 translate = glm::mat4(1.0f);
+	glm::vec3 position = glm::vec3(10.0f, 5.0f, 0.0f);
+	translate = glm::translate(translate, position);
+	
+	//passing info to the uniform buffer obj
+	UniformBufferObject ubo{};
+	ubo.model = translate * rotateToCam * rotateAround;
+	ubo.view = view;
+	ubo.proj = glm::perspective(glm::radians(-45.0f),
+		swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 100.0f);
+	ubo.proj[1][1] *= -1;
+
+	void* data;
+	vkMapMemory(device, uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);
+	memcpy(data, &ubo, sizeof(ubo));
+	vkUnmapMemory(device, uniformBuffersMemory[currentImage]);
 }
