@@ -148,13 +148,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AnnoyingDavid.cpp" />
+    <ClCompile Include="Device.cpp" />
+    <ClCompile Include="Pipeline.cpp" />
+    <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="TriangleApp.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Device.h" />
+    <ClInclude Include="Pipeline.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="SwapChain.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="TriangleApp.h" />
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="shaders\shader1.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

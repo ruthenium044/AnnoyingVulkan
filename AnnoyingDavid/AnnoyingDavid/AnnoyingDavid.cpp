@@ -1,11 +1,12 @@
 // AnnoyingDavid.cpp : This file contains the 'main' function. Program execution begins and ends there.
 
 #include <iostream>
+
 #include "TriangleApp.h"
 
-int main(int argc, char* args[]) {
-	
-	TriangleApp app;
+int main(int argc, char* args[])
+{
+	svk::TriangleApp app{};
 	try
 	{
 		app.run();
