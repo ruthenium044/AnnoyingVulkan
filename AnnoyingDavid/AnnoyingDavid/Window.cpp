@@ -25,7 +25,7 @@ namespace svk
         }
     }
 
-    void svk::Window::initWindow()
+    void Window::initWindow()
     {
         SDL_Init(SDL_INIT_EVERYTHING);
         window = SDL_CreateWindow("Kinda a game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,

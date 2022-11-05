@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
+#include <sys/stat.h>
 #include <vulkan/vulkan.h>
 
 namespace svk
@@ -20,13 +21,17 @@ namespace svk
         {
             return { static_cast<uint32_t>(width), static_cast<uint32_t>(height) };
         };
+        bool wasWindowResized() { return frameBufferResized;}
+        void resetWindowResizedFlag() { frameBufferResized = false;}
         
         void createWindowSurface(VkInstance instance, VkSurfaceKHR &surface);
     private:
+        static void frameBufferResizeCallback(SDL_Window *window, int width, int height);
         void initWindow();
         
         SDL_Window* window = nullptr;
-        const uint32_t width = 800;
-        const uint32_t height = 600;
+        uint32_t width = 800;
+        uint32_t height = 600;
+        bool frameBufferResized = false;
     };
 }

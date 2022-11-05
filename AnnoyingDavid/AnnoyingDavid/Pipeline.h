@@ -8,14 +8,15 @@ namespace svk
 {
     struct PipelineConfigInfo
     {
-        VkViewport viewport;
-        VkRect2D scissor;
+        VkPipelineViewportStateCreateInfo viewportInfo;
         VkPipelineInputAssemblyStateCreateInfo inputAssembly;
         VkPipelineRasterizationStateCreateInfo rasterizer;
         VkPipelineMultisampleStateCreateInfo multisampling;
         VkPipelineColorBlendAttachmentState colorBlendAttachment;
         VkPipelineColorBlendStateCreateInfo colorBlending;
         VkPipelineDepthStencilStateCreateInfo depthStencil;
+        std::vector<VkDynamicState> dynamicStateEnables;
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo;
         VkPipelineLayout pipelineLayout = nullptr;
         VkRenderPass renderPass = nullptr;
         uint32_t subpass = 0;
@@ -31,7 +32,8 @@ namespace svk
         Pipeline(const Pipeline&) = delete;
         Pipeline &operator=(const Pipeline&) = delete;
 
-        static PipelineConfigInfo defaultPipelineConfigInfor(uint32_t width, uint32_t height);
+        void bind(VkCommandBuffer commandBuffer);
+        static PipelineConfigInfo defaultPipelineConfigInfor(PipelineConfigInfo& configInfo);
     private:
         static std::vector<char> readFile(const std::string& filepath);
         

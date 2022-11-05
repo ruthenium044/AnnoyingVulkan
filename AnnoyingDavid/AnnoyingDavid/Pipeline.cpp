@@ -3,6 +3,8 @@
 #include <fstream>
 #include <vulkan/vulkan_core.h>
 
+#include "Model.h"
+
 namespace svk
 {
 	Pipeline::Pipeline(Device &device, const std::string& vertFilepath,
@@ -59,44 +61,28 @@ namespace svk
 		
         VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 		
-		//auto bindingDescription = Vertex::getBindingDescription();
-		//auto attributeDescriptions = Vertex::getAttributeDescriptions();
-	    //
-        //VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-        //vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		//vertexInputInfo.vertexBindingDescriptionCount = 1;
-		//vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-		//vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-		//vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
-		//
-        //std::vector<VkDynamicState> dynamicStates = {
-        //    VK_DYNAMIC_STATE_VIEWPORT,
-        //    VK_DYNAMIC_STATE_SCISSOR
-        //};
-        //VkPipelineDynamicStateCreateInfo dynamicState{};
-        //dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-        //dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
-        //dynamicState.pDynamicStates = dynamicStates.data();
-		
-		VkPipelineViewportStateCreateInfo viewportState{};
-		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-		viewportState.viewportCount = 1;
-		viewportState.pViewports = &configInfo.viewport;
-		viewportState.scissorCount = 1;
-		viewportState.pScissors = &configInfo.scissor;
+		auto bindingDescriptions = Model::Vertex::getBindingDescriptions();
+		auto attributeDescriptions = Model::Vertex::getAttributeDescriptions();
+	    
+        VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+        vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vertexInputInfo.vertexBindingDescriptionCount = 4;
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		vertexInputInfo.pVertexBindingDescriptions = &bindingDescriptions;
+		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 		
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipelineInfo.stageCount = 2;
 		pipelineInfo.pStages = shaderStages;
-		pipelineInfo.pVertexInputState = nullptr;//&vertexInputInfo;
+		pipelineInfo.pVertexInputState = &vertexInputInfo;
 		pipelineInfo.pInputAssemblyState = &configInfo.inputAssembly;
-		pipelineInfo.pViewportState = &viewportState;
+		pipelineInfo.pViewportState = &configInfo.viewportInfo;
 		pipelineInfo.pRasterizationState = &configInfo.rasterizer;
 		pipelineInfo.pMultisampleState = &configInfo.multisampling;
 		pipelineInfo.pDepthStencilState = &configInfo.depthStencil;
 		pipelineInfo.pColorBlendState = &configInfo.colorBlending;
-		pipelineInfo.pDynamicState = nullptr;//&dynamicState;
+		pipelineInfo.pDynamicState = &configInfo.dynamicStateInfo;
 		pipelineInfo.layout = configInfo.pipelineLayout;
 		pipelineInfo.renderPass = configInfo.renderPass;
 		pipelineInfo.subpass = configInfo.subpass;
@@ -125,24 +111,23 @@ namespace svk
 			throw std::runtime_error("failed to create shader module!");
 		}
 	}
-	
-	PipelineConfigInfo Pipeline::defaultPipelineConfigInfor(uint32_t width, uint32_t height)
-	{
-		PipelineConfigInfo configInfo{};
 
+	void Pipeline::bind(VkCommandBuffer commandBuffer)
+	{
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+	}
+
+	PipelineConfigInfo Pipeline::defaultPipelineConfigInfor(PipelineConfigInfo& configInfo)
+	{
 		configInfo.inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		configInfo.inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		configInfo.inputAssembly.primitiveRestartEnable = VK_FALSE;
 		
-		configInfo.viewport.x = 0.0f;
-		configInfo.viewport.y = 0.0f;
-		configInfo.viewport.width = (float) width;//swapChainExtent.width;
-		configInfo.viewport.height = (float) height;//swapChainExtent.height;
-		configInfo.viewport.minDepth = 0.0f;
-		configInfo.viewport.maxDepth = 1.0f;
-	
-		configInfo.scissor.offset = {0, 0};
-		configInfo.scissor.extent = {width, height};//swapChainExtent;
+		configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		configInfo.viewportInfo.viewportCount = 1;
+		configInfo.viewportInfo.pViewports = nullptr;
+		configInfo.viewportInfo.scissorCount = 1;
+		configInfo.viewportInfo.pScissors = nullptr;
 		
         configInfo.rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         configInfo.rasterizer.depthClampEnable = VK_FALSE;
@@ -196,7 +181,10 @@ namespace svk
 		configInfo.depthStencil.front = {}; // Optional
 		configInfo.depthStencil.back = {}; // Optional
 
-		return configInfo;
+		configInfo.dynamicStateEnables = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+		configInfo.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+		configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
+		configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data();
 	}
 }
 

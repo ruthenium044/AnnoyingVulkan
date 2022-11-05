@@ -22,7 +22,6 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 
-#define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define VK_USE_PLATFORM_WIN32_KHR
@@ -30,37 +29,6 @@
 const std::string MODEL_PATH = "models/skull/skull.obj";
 const std::string TEXTURE_PATH = "models/skull/skull.jpg";
 
-struct Vertex
-{
-	glm::vec3 pos;
-	glm::vec3 color;
-	glm::vec2 texCoord;
-	glm::vec3 normal;
-
-	static VkVertexInputBindingDescription getBindingDescription()
-	{
-		VkVertexInputBindingDescription bindingDescription{};
-		bindingDescription.binding = 0;
-		bindingDescription.stride = sizeof(Vertex);
-		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-		return bindingDescription;
-	}
-
-	static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescriptions()
-	{
-		std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions{};
-		attributeDescriptions[0] = {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, pos)};
-		attributeDescriptions[1] = {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)};
-		attributeDescriptions[2] = {2, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, texCoord)};
-		attributeDescriptions[3] = {3, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)};
-		return attributeDescriptions;
-	}
-
-	bool operator==(const Vertex& other) const
-	{
-		return pos == other.pos && color == other.color && texCoord == other.texCoord && normal == other.normal;
-	}
-};
 
 struct UniformBufferObject
 {
@@ -127,9 +95,8 @@ struct UniformBufferObject
  	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
  	
  	void createCommandBuffer();
- 	void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
- 	
- 	void createVertexBuffer();
+ 	v
+
  	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
  	
  	void createIndexBuffer();
@@ -172,7 +139,7 @@ struct UniformBufferObject
  	
  	
  	
- 	void recreateSwapChain();
+ 	
  	void cleanupSwapChain();
  };
 
