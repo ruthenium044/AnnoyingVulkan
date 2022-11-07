@@ -22,7 +22,7 @@ namespace svk
     }
 
     Model::Model(Device& dev, const std::vector<Vertex>& vertices)
-    : device{dev}
+    : device(dev)
     {
         createVertexBuffers(vertices);
     }
@@ -51,7 +51,7 @@ namespace svk
         assert(vertexCount >= 3 && "Vertex must be at least 3");
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
         
-        device.createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        device.createBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
             vertexBuffer, vertexBufferMemory);
 

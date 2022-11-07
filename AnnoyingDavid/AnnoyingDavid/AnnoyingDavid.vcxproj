@@ -148,17 +148,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AnnoyingDavid.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Device.cpp" />
+    <ClCompile Include="GameObj.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Pipeline.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="SimpleRenderSystem.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="TriangleApp.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Device.h" />
+    <ClInclude Include="GameObj.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Pipeline.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="SimpleRenderSystem.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="tiny_obj_loader.h" />
@@ -166,6 +174,7 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="shaders\shader1.frag" />
     <Content Include="shaders\shader1.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

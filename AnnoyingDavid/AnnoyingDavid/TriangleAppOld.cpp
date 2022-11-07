@@ -6,8 +6,6 @@
 #include "tiny_obj_loader.h"
 #include "Utils.h"
 
-
-
 void TriangleAppOld::cleanup()
 {
 	cleanupSwapChain();
@@ -89,30 +87,6 @@ void TriangleAppOld::drawFrame()
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
-void TriangleAppOld::processInput(SDL_KeyboardEvent* key)
-{
-	float cameraSpeed = 1000.0f * deltaTime;
-	switch (key->keysym.sym)
-	{
-	case SDLK_a:
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		break;
-	case SDLK_d:
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		break;
-	case SDLK_w:
-		cameraPos += cameraSpeed * cameraFront;
-		break;
-	case SDLK_s:
-		cameraPos -= cameraSpeed * cameraFront;
-		break;
-	default: ;
-	}
-}
-
-
-
-
 VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 {
 	for (const auto& availableFormat : availableFormats)
@@ -127,15 +101,8 @@ VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>
 	return availableFormats[0];
 }
 
-VkExtent2D TriangleAppOld::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
-{
-	
-}
-
 void TriangleAppOld::recreateSwapChain()
 {
-	
-	
 	cleanupSwapChain();
 	
 	createSwapChain();
@@ -174,8 +141,6 @@ void TriangleAppOld::cleanupSwapChain()
 
 void TriangleAppOld::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
 {
-	
-	
 	VkBuffer vertexBuffers[] = {vertexBuffer};
 	VkDeviceSize offsets[] = {0};
 	

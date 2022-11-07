@@ -3,19 +3,17 @@
 
 #include "Device.h"
 
-namespace svk
-{
-    class SwapChain
-    {
+namespace svk {
+    class SwapChain {
     public:
-        const int MAX_FRAMES_IN_FLIGHT = 2;
-        
-        SwapChain(Device &deviceRef, VkExtent2D windowExtent);
-        SwapChain(Device &deviceRef, VkExtent2D windowExtent, std::shared_ptr<SwapChain> prev);
+        static const int MAX_FRAMES_IN_FLIGHT = 2;
+
+        SwapChain(Device& deviceRef, VkExtent2D windowExtent);
+        SwapChain(Device& deviceRef, VkExtent2D windowExtent, std::shared_ptr<SwapChain> prev);
         ~SwapChain();
 
-        SwapChain(const SwapChain &) = delete;
-        void operator=(const SwapChain &) = delete;
+        SwapChain(const SwapChain&) = delete;
+        void operator=(const SwapChain&) = delete;
 
         VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
         VkRenderPass getRenderPass() { return renderPass; }
@@ -26,15 +24,19 @@ namespace svk
         uint32_t width() { return swapChainExtent.width; }
         uint32_t height() { return swapChainExtent.height; }
 
-        float extentAspectRatio()
-        {
+        float extentAspectRatio() {
             return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
         }
+
         VkFormat findDepthFormat();
 
-        VkResult acquireNextImage(uint32_t *imageIndex);
-        VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
-        
+        VkResult acquireNextImage(uint32_t* imageIndex);
+        VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
+
+        bool compareSwapChainFormats(const SwapChain& swapChain) const {
+            return swapChain.swapChainDepthFormat == swapChainDepthFormat &&
+                swapChain.swapChainImageFormat == swapChainImageFormat;
+        }
     private:
         void init();
         void createSwapChain();
@@ -43,14 +45,15 @@ namespace svk
         void createRenderPass();
         void createFramebuffers();
         void createSyncObjects();
-        
+
         VkSurfaceFormatKHR chooseSwapSurfaceFormat(
-              const std::vector<VkSurfaceFormatKHR> &availableFormats);
+            const std::vector<VkSurfaceFormatKHR>& availableFormats);
         VkPresentModeKHR chooseSwapPresentMode(
-            const std::vector<VkPresentModeKHR> &availablePresentModes);
+            const std::vector<VkPresentModeKHR>& availablePresentModes);
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
         VkFormat swapChainImageFormat;
+        VkFormat swapChainDepthFormat;
         VkExtent2D swapChainExtent = {};
         std::vector<VkFramebuffer> swapChainFramebuffers;
         VkRenderPass renderPass = nullptr;
@@ -61,7 +64,7 @@ namespace svk
         std::vector<VkImage> swapChainImages;
         std::vector<VkImageView> swapChainImageViews;
 
-        Device &device;
+        Device& device;
         VkExtent2D windowExtent;
         VkSwapchainKHR swapChain = nullptr;
         std::shared_ptr<SwapChain> oldSwapChain;
