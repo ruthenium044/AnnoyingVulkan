@@ -21,7 +21,6 @@ namespace svk {
         void run();
     private:
         void loadGameObjs();
-        void LoadModels(const char* filepath);
 
         bool isRunning = true;
 

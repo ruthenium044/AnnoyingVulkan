@@ -1,11 +1,14 @@
 ﻿#pragma once
 #include "Device.h"
+#include "Utils.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
 #include <array>
+#include <memory>
+#include <string>
 
 namespace svk {
     class Model {
@@ -24,9 +27,18 @@ namespace svk {
             }
         };
 
-        Model(Device& dev, const std::vector<Vertex>& vertices);
+        struct Builder {
+            std::vector<Vertex> vertices;
+            std::vector<uint32_t> indices;
+
+            void loadModel(const std::string &filepath);
+        };
+
+        Model(Device& dev, const Builder &builder);
         ~Model();
 
+        static std::unique_ptr<Model> createModelFromFile(Device& device, const std::string &filepath); 
+        
         Model(const Model&) = delete;
         Model& operator=(const Model&) = delete;
 
@@ -35,12 +47,17 @@ namespace svk {
 
     private:
         void createVertexBuffers(const std::vector<Vertex>& vertices);
+        void createIndexBuffers(const std::vector<uint32_t>& indices);
 
         Device& device;
+        
         VkBuffer vertexBuffer{};
         VkDeviceMemory vertexBufferMemory{};
         uint32_t vertexCount{};
 
-
+        bool hasIndexBuffer = false;
+        VkBuffer indexBuffer{};
+        VkDeviceMemory indexBufferMemory{};
+        uint32_t indexCount{};
     };
 }

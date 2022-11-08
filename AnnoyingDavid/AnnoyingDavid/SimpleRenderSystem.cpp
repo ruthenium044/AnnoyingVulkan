@@ -7,7 +7,7 @@ namespace svk {
     struct SimplePushConstant
     {
         alignas(16) glm::mat4 transform{1.0f};
-        alignas(16) glm::vec3 color;
+        alignas(16) glm::mat4 normalMatrix{1.0f};
     };
     
     SimpleRenderSystem::SimpleRenderSystem(Device& dev, VkRenderPass renderPass): device(dev) {
@@ -22,11 +22,10 @@ namespace svk {
 
         auto proejctionView = camera.getProjection() * camera.getView();
         for(auto& obj: gameObjs) {
-            //update here
-            
             SimplePushConstant push{};
-            push.color = obj.color;
-            push.transform = proejctionView * obj.transform.mat4();
+            auto modelMatrix = obj.transform.mat4();
+            push.transform = proejctionView * modelMatrix;
+            push.normalMatrix = obj.transform.normalMatrix();
 
             vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_ALL, 0,
                               sizeof(SimplePushConstant), &push);

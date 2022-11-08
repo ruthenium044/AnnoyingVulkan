@@ -1,16 +1,12 @@
 ﻿#pragma once
+#include <functional>
 
-#include <fstream>
-#include <vector>
-
-namespace std
+namespace svk
 {
-    template<> struct hash<Vertex>
-    {
-        size_t operator()(Vertex const& vertex) const
-        {
-            return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^
-                (hash<glm::vec2>()(vertex.texCoord) << 1);
-        }
+    // from: https://stackoverflow.com/a/57595105
+    template <typename T, typename... Rest>
+    void hashCombine(std::size_t& seed, const T& v, const Rest&... rest) {
+        seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        (hashCombine(seed, rest), ...);
     };
 }

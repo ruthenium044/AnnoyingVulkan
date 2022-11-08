@@ -152,6 +152,7 @@
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="GameObj.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="MovementController.cpp" />
     <ClCompile Include="Pipeline.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SimpleRenderSystem.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Device.h" />
     <ClInclude Include="GameObj.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="MovementController.h" />
     <ClInclude Include="Pipeline.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SimpleRenderSystem.h" />
@@ -171,6 +173,7 @@
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="TriangleApp.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>

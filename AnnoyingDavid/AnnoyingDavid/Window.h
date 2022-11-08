@@ -14,8 +14,8 @@ namespace svk {
         Window(const Window&) = delete;
         Window& operator=(const Window&) = delete;
 
-        SDL_Window* GetWindow() { return window; };
-        VkExtent2D getExtent() { return {width, height}; };
+        SDL_Window* GetWindow() const { return window; }
+        VkExtent2D getExtent() { return {width, height}; }
         bool wasWindowResized() { return frameBufferResized; }
         void resetWindowResizedFlag() { frameBufferResized = false; }
 
