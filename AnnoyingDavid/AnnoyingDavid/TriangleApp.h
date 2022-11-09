@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <memory>
 
+#include "Descriptors.h"
 #include "GameObj.h"
 #include "Model.h"
 #include "Window.h"
@@ -27,9 +28,8 @@ namespace svk {
         Window window{WIDTH, HEIGHT};
         Device device{window};
         Renderer renderer{window, device};
-        
-        std::vector<GameObj> gameObjs;
 
-        void mainLoop();
+        std::unique_ptr<DescriptorPool> globalPool{};
+        std::vector<GameObj> gameObjs;
     };
 }

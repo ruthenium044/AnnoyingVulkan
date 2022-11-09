@@ -21,10 +21,10 @@ namespace svk {
         std::array<int, SDL_NUM_SCANCODES> prevStates;
         std::array<int, SDL_NUM_SCANCODES> currStates;
 
-        bool IsDown(SDL_Scancode scancode);
-        bool IsUp(SDL_Scancode scancode);
-        bool IsPressed(SDL_Scancode scancode);
-        bool IsReleased(SDL_Scancode scancode);
+        bool isDown(SDL_Scancode scancode);
+        bool isUp(SDL_Scancode scancode);
+        bool isPressed(SDL_Scancode scancode);
+        bool isReleased(SDL_Scancode scancode);
 
         void updateKey(SDL_Scancode scancode, bool isDown);
         void refresh();

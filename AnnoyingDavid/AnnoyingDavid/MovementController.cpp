@@ -1,18 +1,18 @@
 ﻿#include "MovementController.h"
 
-bool svk::MovementController::IsDown(SDL_Scancode scancode) {
+bool svk::MovementController::isDown(SDL_Scancode scancode) {
     return currStates[scancode];
 }
 
-bool svk::MovementController::IsUp(SDL_Scancode scancode) {
+bool svk::MovementController::isUp(SDL_Scancode scancode) {
     return !currStates[scancode];
 }
 
-bool svk::MovementController::IsPressed(SDL_Scancode scancode) {
+bool svk::MovementController::isPressed(SDL_Scancode scancode) {
     return currStates[scancode] && !prevStates[scancode];
 }
 
-bool svk::MovementController::IsReleased(SDL_Scancode scancode) {
+bool svk::MovementController::isReleased(SDL_Scancode scancode) {
     return !currStates[scancode] && prevStates[scancode];
 }
 
@@ -26,10 +26,10 @@ void svk::MovementController::refresh() {
 
 void svk::MovementController::update(float dt, GameObj& gameObject) {
     glm::vec3 rotate{0};
-    if (IsDown(keys.lookRight)) rotate.y += 1.f;
-    if (IsDown(keys.lookLeft)) rotate.y -= 1.f;
-    if (IsDown(keys.lookUp)) rotate.x += 1.f;
-    if (IsDown(keys.lookDown)) rotate.x -= 1.f;
+    if (isDown(keys.lookRight)) rotate.y += 1.f;
+    if (isDown(keys.lookLeft)) rotate.y -= 1.f;
+    if (isDown(keys.lookUp)) rotate.x += 1.f;
+    if (isDown(keys.lookDown)) rotate.x -= 1.f;
 
     if (glm::dot(rotate, rotate) > std::numeric_limits<float>::epsilon()) {
         gameObject.transform.rotation += lookSpeed * dt * glm::normalize(rotate);
@@ -44,12 +44,12 @@ void svk::MovementController::update(float dt, GameObj& gameObject) {
     const glm::vec3 upDir{0.f, -1.f, 0.f};
 
     glm::vec3 moveDir{0.f};
-    if (IsDown(keys.moveForward)) moveDir += forwardDir;
-    if (IsDown(keys.moveBackward)) moveDir -= forwardDir;
-    if (IsDown(keys.moveRight)) moveDir += rightDir;
-    if (IsDown(keys.moveLeft)) moveDir -= rightDir;
-    if (IsDown(keys.moveUp)) moveDir += upDir;
-    if (IsDown(keys.moveDown)) moveDir -= upDir;
+    if (isDown(keys.moveForward)) moveDir += forwardDir;
+    if (isDown(keys.moveBackward)) moveDir -= forwardDir;
+    if (isDown(keys.moveRight)) moveDir += rightDir;
+    if (isDown(keys.moveLeft)) moveDir -= rightDir;
+    if (isDown(keys.moveUp)) moveDir += upDir;
+    if (isDown(keys.moveDown)) moveDir -= upDir;
 
     if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon()) {
         gameObject.transform.translation += moveSpeed * dt * glm::normalize(moveDir);

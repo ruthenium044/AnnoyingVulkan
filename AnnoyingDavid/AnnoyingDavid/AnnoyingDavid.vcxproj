@@ -148,8 +148,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AnnoyingDavid.cpp" />
+    <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Descriptors.cpp" />
     <ClCompile Include="Device.cpp" />
+    <ClCompile Include="FrameInfo.cpp" />
     <ClCompile Include="GameObj.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MovementController.cpp" />
@@ -161,8 +164,11 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Buffer.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Descriptors.h" />
     <ClInclude Include="Device.h" />
+    <ClInclude Include="FrameInfo.h" />
     <ClInclude Include="GameObj.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MovementController.h" />

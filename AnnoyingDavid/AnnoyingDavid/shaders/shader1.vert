@@ -11,15 +11,19 @@ layout(location = 2) out vec3 fragNormalWorld;
 layout(location = 3) out vec3 fragPosWorld;
 
 layout(push_constant) uniform Push {
-    mat4 transform;
+    mat4 modelMatrix;
     mat4 normalMatrix;
 } push;
 
+layout(set = 0, binding = 0) uniform GlobalUbo {
+    mat4 projectionViewMatrix;
+    vec3 directionToLight;
+} ubo;
+
 void main() {
-    //vec4 positionWorld = push.modelMatrix * vec4(inPosition, 1.0);
-    gl_Position = push.transform * vec4(inPosition, 1.0);
-    //gl_Position = ubo.projection * ubo.view * positionWorld;
+    vec4 positionWorld = push.modelMatrix * vec4(inPosition, 1.0);
+    gl_Position = ubo.projectionViewMatrix * positionWorld;
     fragNormalWorld = normalize(mat3(push.normalMatrix) * inNormal);
-    //fragPosWorld = positionWorld.xyz;
+    fragPosWorld = positionWorld.xyz;
     fragColor = inColor;
 }

@@ -10,6 +10,8 @@
 #include <memory>
 #include <string>
 
+#include "Buffer.h"
+
 namespace svk {
     class Model {
     public:
@@ -51,13 +53,11 @@ namespace svk {
 
         Device& device;
         
-        VkBuffer vertexBuffer{};
-        VkDeviceMemory vertexBufferMemory{};
+        std::unique_ptr<Buffer> vertexBuffer;
         uint32_t vertexCount{};
 
         bool hasIndexBuffer = false;
-        VkBuffer indexBuffer{};
-        VkDeviceMemory indexBufferMemory{};
+        std::unique_ptr<Buffer> indexBuffer;
         uint32_t indexCount{};
     };
 }
