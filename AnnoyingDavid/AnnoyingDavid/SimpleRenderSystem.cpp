@@ -17,13 +17,17 @@ namespace svk {
     
     SimpleRenderSystem::~SimpleRenderSystem() { vkDestroyPipelineLayout(device.getDevice(), pipelineLayout, nullptr); }
 
-    void SimpleRenderSystem::renderGameObjs(FrameInfo &frameInfo, std::vector<GameObj>& gameObjs) {
+    void SimpleRenderSystem::renderGameObjs(FrameInfo &frameInfo) {
         pipeline->bind(frameInfo.commandBuffer);
 
         vkCmdBindDescriptorSets(frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
             0, 1, &frameInfo.globalDescriptorSet, 0, nullptr);
        
-        for(auto& obj: gameObjs) {
+        for(auto& kv: frameInfo.gameObjs) {
+            auto& obj = kv.second;
+            if (obj.model == nullptr) {
+                continue;
+            }
             SimplePushConstant push{};
             push.modelMatrix = obj.transform.mat4();
             push.normalMatrix = obj.transform.normalMatrix();

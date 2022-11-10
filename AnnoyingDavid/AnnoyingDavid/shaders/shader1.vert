@@ -6,9 +6,8 @@ layout(location = 2) in vec2 inTexCoord;
 layout(location = 3) in vec3 inNormal;
 
 layout(location = 0) out vec3 fragColor;
-layout(location = 1) out vec2 fragTexCoord;
+layout(location = 1) out vec3 fragPosWorld;
 layout(location = 2) out vec3 fragNormalWorld;
-layout(location = 3) out vec3 fragPosWorld;
 
 layout(push_constant) uniform Push {
     mat4 modelMatrix;
@@ -17,7 +16,10 @@ layout(push_constant) uniform Push {
 
 layout(set = 0, binding = 0) uniform GlobalUbo {
     mat4 projectionViewMatrix;
-    vec3 directionToLight;
+    vec4 ambientColor;
+    vec3 lightDirection;
+    vec3 lightPosition;
+    vec4 lightColor;
 } ubo;
 
 void main() {

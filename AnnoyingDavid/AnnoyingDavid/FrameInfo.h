@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Buffer.h"
 #include "Camera.h"
+#include "GameObj.h"
 
 namespace svk {
     struct FrameInfo {
@@ -9,5 +10,6 @@ namespace svk {
         VkCommandBuffer commandBuffer;
         Camera &camera;
         VkDescriptorSet globalDescriptorSet;
+        GameObj::Map &gameObjs;
     };
 }

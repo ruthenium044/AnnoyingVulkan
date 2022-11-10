@@ -20,8 +20,9 @@ namespace svk {
     
     class GameObj {
     public:
-    using id_t = unsigned int;
-
+        using id_t = unsigned int;
+        using Map = std::unordered_map<id_t, GameObj>;
+        
         static GameObj createGameObj() {
             static id_t currentId = 0;
             return GameObj{currentId++};

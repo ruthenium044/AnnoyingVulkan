@@ -14,7 +14,7 @@ namespace svk {
         SimpleRenderSystem(const SimpleRenderSystem&) = delete;
         SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
 
-        void renderGameObjs(FrameInfo &frameInfo, std::vector<GameObj>& gameObjs);
+        void renderGameObjs(FrameInfo &frameInfo);
     private:
         
         void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
