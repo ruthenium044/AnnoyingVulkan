@@ -10,7 +10,8 @@ namespace svk {
 
     DescriptorSetLayout::Builder& DescriptorSetLayout::Builder::addBinding(uint32_t binding,
         VkDescriptorType descriptorType, VkShaderStageFlags stageFlags, uint32_t count) {
-        assert(!bindings.contains(binding) && "Binding already in use");
+        assert(bindings.count(binding) == 0 && "Binding already in use");
+
         VkDescriptorSetLayoutBinding layoutBinding{};
         layoutBinding.binding = binding;
         layoutBinding.descriptorType = descriptorType;
@@ -26,10 +27,10 @@ namespace svk {
 
     // *************** Descriptor Set Layout *********************
 
-    DescriptorSetLayout::DescriptorSetLayout(Device& dev, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings)
-        : device{dev}, bindings{bindings} {
+    DescriptorSetLayout::DescriptorSetLayout(Device& dev, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> binds)
+        : device{dev}, bindings{binds} {
         std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings{};
-        for (auto kv : bindings) {
+        for (auto kv : binds) {
             setLayoutBindings.push_back(kv.second);
         }
 
@@ -38,11 +39,8 @@ namespace svk {
         descriptorSetLayoutInfo.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
         descriptorSetLayoutInfo.pBindings = setLayoutBindings.data();
 
-        if (vkCreateDescriptorSetLayout(
-            device.getDevice(),
-            &descriptorSetLayoutInfo,
-            nullptr,
-            &descriptorSetLayout) != VK_SUCCESS) {
+        if (vkCreateDescriptorSetLayout(device.getDevice(), &descriptorSetLayoutInfo,
+            nullptr, &descriptorSetLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create descriptor set layout!");
         }
     }
@@ -133,10 +131,8 @@ namespace svk {
 
         auto& bindingDescription = setLayout.bindings[binding];
 
-        assert(
-            bindingDescription.descriptorCount == 1 &&
-            "Binding single descriptor info, but binding expects multiple");
-
+        assert(bindingDescription.descriptorCount == 1 && "Binding single descriptor info, but binding expects multiple");
+  
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         write.descriptorType = bindingDescription.descriptorType;
@@ -153,9 +149,7 @@ namespace svk {
 
         auto& bindingDescription = setLayout.bindings[binding];
 
-        assert(
-            bindingDescription.descriptorCount == 1 &&
-            "Binding single descriptor info, but binding expects multiple");
+        assert(bindingDescription.descriptorCount == 1 && "Binding single descriptor info, but binding expects multiple");
 
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

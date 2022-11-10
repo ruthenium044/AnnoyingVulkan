@@ -17,7 +17,7 @@ namespace svk {
         void renderGameObjs(FrameInfo &frameInfo, std::vector<GameObj>& gameObjs);
     private:
         
-        void createPipelineLayer(VkDescriptorSetLayout globalSetLayout);
+        void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
         void createPipeline(VkRenderPass renderPass);
         
         Device& device;

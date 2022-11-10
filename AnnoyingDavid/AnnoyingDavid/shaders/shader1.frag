@@ -1,13 +1,13 @@
 
 #version 450
 
-layout(binding = 1) uniform sampler2D texSampler;
+//layout(binding = 0) uniform sampler2D texSampler;
 
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
 layout(location = 2) in vec3 fragNormalWorld;
-layout(location = 3) in vec3 fragPos;
-layout(location = 4) in vec3 viewPos;
+layout(location = 3) in vec3 fragPosWorld;
+//layout(location = 4) in vec3 viewPos;
 
 layout(location = 0) out vec4 outColor;
 
@@ -23,21 +23,21 @@ float ambientStrength = 0.1;
 float specularStrength = 1.5;
 
 void main() {
-    outColor = texture(texSampler, fragTexCoord);
+    //outColor = texture(texSampler, fragTexCoord);
     
     vec3 ambient = ambientStrength * lightColor;
 
     //diffuse
-    vec3 lightDir = normalize(lightPos - fragPos);
+    vec3 lightDir = normalize(lightPos - fragPosWorld);
     float diff = max(dot(fragNormalWorld, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;
     
     //specular
-    vec3 viewDir = normalize(viewPos - fragPos);
+    vec3 viewDir = normalize(lightPos - fragPosWorld);
     vec3 reflectDir = reflect(lightDir, fragNormalWorld);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64);
     vec3 specular = specularStrength * spec * lightColor;
 
-    vec3 result = (ambient + diffuse + specular) * outColor.xyz;
+    vec3 result = (ambient + diffuse + specular) * fragColor.xyz;
     outColor = vec4(result, 1.0);
 }

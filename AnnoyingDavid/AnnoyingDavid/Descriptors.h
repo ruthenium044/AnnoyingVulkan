@@ -10,6 +10,7 @@ namespace svk {
         class Builder {
         public:
             Builder(Device& dev) : device{dev} {}
+            
             Builder& addBinding(uint32_t binding, VkDescriptorType descriptorType,
                 VkShaderStageFlags stageFlags, uint32_t count = 1);
             std::unique_ptr<DescriptorSetLayout> build() const;
@@ -18,7 +19,7 @@ namespace svk {
             std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
         };
 
-        DescriptorSetLayout(Device& dev, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings);
+        DescriptorSetLayout(Device& dev, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> binds);
         ~DescriptorSetLayout();
         DescriptorSetLayout(const DescriptorSetLayout&) = delete;
         DescriptorSetLayout& operator=(const DescriptorSetLayout&) = delete;
@@ -26,7 +27,7 @@ namespace svk {
         VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; }
     private:
         Device& device;
-        VkDescriptorSetLayout descriptorSetLayout;
+        VkDescriptorSetLayout descriptorSetLayout{};
         std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings;
 
         friend class DescriptorWriter;
@@ -63,7 +64,7 @@ namespace svk {
 
     private:
         Device& device;
-        VkDescriptorPool descriptorPool;
+        VkDescriptorPool descriptorPool{};
 
         friend class DescriptorWriter;
     };

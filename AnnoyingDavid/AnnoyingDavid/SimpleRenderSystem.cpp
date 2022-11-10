@@ -11,7 +11,7 @@ namespace svk {
     };
     
     SimpleRenderSystem::SimpleRenderSystem(Device& dev, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout): device(dev) {
-        createPipelineLayer(globalSetLayout);
+        createPipelineLayout(globalSetLayout);
         createPipeline(renderPass);
     }
     
@@ -28,16 +28,16 @@ namespace svk {
             push.modelMatrix = obj.transform.mat4();
             push.normalMatrix = obj.transform.normalMatrix();
 
-            vkCmdPushConstants(frameInfo.commandBuffer, pipelineLayout, VK_SHADER_STAGE_ALL, 0,
+            vkCmdPushConstants(frameInfo.commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                               sizeof(SimplePushConstant), &push);
             obj.model->bind(frameInfo.commandBuffer);
             obj.model->draw(frameInfo.commandBuffer);
         }
     }
 
-    void SimpleRenderSystem::createPipelineLayer(VkDescriptorSetLayout globalSetLayout) {
+    void SimpleRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
         VkPushConstantRange pushConstantRange{};
-        pushConstantRange.stageFlags = VK_SHADER_STAGE_ALL;
+        pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
         pushConstantRange.offset = 0;
         pushConstantRange.size = sizeof(SimplePushConstant);
 
@@ -56,6 +56,8 @@ namespace svk {
     }
     
     void SimpleRenderSystem::createPipeline(VkRenderPass renderPass) {
+        assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
+
         PipelineConfigInfo pipelineConfig{};
         Pipeline::defaultPipelineConfigInfor(pipelineConfig);
         pipelineConfig.renderPass = renderPass;

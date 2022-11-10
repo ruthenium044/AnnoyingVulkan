@@ -19,10 +19,12 @@ namespace svk {
         float getAspectRatio() const { return swapChain->extentAspectRatio(); };
         bool isFrameInProgress() const{ return isFrameStarted; }
         VkCommandBuffer getCurrentCommandBuffer() const {
+            assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
             return commandBuffers[currentFrameIndex];
         }
 
         int getFrameIndex() const {
+            assert(isFrameStarted && "Cannot get frame index when frame not in progress");
             return currentFrameIndex;
         }
 
@@ -43,9 +45,7 @@ namespace svk {
         std::vector<VkCommandBuffer> commandBuffers;
 
         uint32_t currentImageIndex;
-        int currentFrameIndex;
+        int currentFrameIndex = 0;
         bool isFrameStarted;
-        
-        void mainLoop();
     };
 }

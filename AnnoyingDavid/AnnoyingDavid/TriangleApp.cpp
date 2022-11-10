@@ -28,7 +28,7 @@ namespace svk
         std::vector<std::unique_ptr<Buffer>> uboBuffers(SwapChain::MAX_FRAMES_IN_FLIGHT);
         for (int i = 0; i < uboBuffers.size(); ++i) {
             uboBuffers[i] = std::make_unique<Buffer>(device, sizeof(GlobalUbo), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
             uboBuffers[i]->map();
         }
 
@@ -41,11 +41,6 @@ namespace svk
             DescriptorWriter(*globalSetLayout, *globalPool).writeBuffer(0, &bufferInfo)
             .build(globalDescriptorSets[i]);
         }
-        
-        Buffer gloablUboBuffer{device, sizeof(GlobalUbo), SwapChain::MAX_FRAMES_IN_FLIGHT,
-        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-            device.properties.limits.minUniformBufferOffsetAlignment};
-        gloablUboBuffer.map();
         
         SimpleRenderSystem simpleRenderSystem{device, renderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
         Camera camera{};
