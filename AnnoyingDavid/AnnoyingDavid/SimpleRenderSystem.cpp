@@ -66,8 +66,8 @@ namespace svk {
         Pipeline::defaultPipelineConfigInfor(pipelineConfig);
         pipelineConfig.renderPass = renderPass;
         pipelineConfig.pipelineLayout = pipelineLayout;
-        pipeline = std::make_unique<Pipeline>(device, "shaders/vert.spv",
-                                              "shaders/frag.spv", pipelineConfig);
+        pipeline = std::make_unique<Pipeline>(device, "shaders/shader1.vert.spv",
+                                              "shaders/shader1.frag.spv", pipelineConfig);
     
     }
 }

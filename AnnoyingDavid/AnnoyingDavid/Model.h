@@ -21,8 +21,8 @@ namespace svk {
             glm::vec2 texCoord;
             glm::vec3 normal;
 
-            static VkVertexInputBindingDescription getBindingDescriptions();
-            static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescriptions();
+            static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
+            static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
 
             bool operator==(const Vertex& other) const {
                 return pos == other.pos && color == other.color && texCoord == other.texCoord && normal == other.normal;

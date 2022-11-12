@@ -157,6 +157,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MovementController.cpp" />
     <ClCompile Include="Pipeline.cpp" />
+    <ClCompile Include="PointRenderingSystem.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SimpleRenderSystem.cpp" />
     <ClCompile Include="SwapChain.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="MovementController.h" />
     <ClInclude Include="Pipeline.h" />
+    <ClInclude Include="PointRenderingSystem.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SimpleRenderSystem.h" />
     <ClInclude Include="stb_image.h" />
@@ -183,6 +185,8 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="shaders\pointLight.frag" />
+    <Content Include="shaders\pointLight.vert" />
     <Content Include="shaders\shader1.frag" />
     <Content Include="shaders\shader1.vert" />
   </ItemGroup>

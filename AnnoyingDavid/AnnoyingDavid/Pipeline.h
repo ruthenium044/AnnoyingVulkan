@@ -6,6 +6,8 @@
 
 namespace svk {
     struct PipelineConfigInfo {
+        std::vector<VkVertexInputBindingDescription> bindingDescriptions{};
+        std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
         VkPipelineViewportStateCreateInfo viewportInfo;
         VkPipelineInputAssemblyStateCreateInfo inputAssembly;
         VkPipelineRasterizationStateCreateInfo rasterizer;

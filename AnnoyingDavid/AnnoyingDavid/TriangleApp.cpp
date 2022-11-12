@@ -7,19 +7,11 @@
 #include <chrono>
 
 #include "MovementController.h"
+#include "PointRenderingSystem.h"
 #include "SimpleRenderSystem.h"
 
 namespace svk
 {
-    struct GlobalUbo {
-        alignas(16) glm::mat4 projection{1.0f};
-
-        alignas(16) glm::vec4 ambientColor{0.1f, 0.1f, 0.1f, 0.02f};
-        alignas(16) glm::vec3 lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, 1.0f});
-        alignas(16) glm::vec3 lightPosition{1.0f, 2.0f, -1.0f};
-        alignas(16) glm::vec4 lightColor{0.0f, 0.4f, 0.0f, 1.0f};
-    };
-    
     TriangleApp::TriangleApp() {
         globalPool = DescriptorPool::Builder(device).setMaxSets(SwapChain::MAX_FRAMES_IN_FLIGHT)
         .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, SwapChain::MAX_FRAMES_IN_FLIGHT).build();
@@ -35,18 +27,22 @@ namespace svk
                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
             uboBuffers[i]->map();
         }
-
+        
         auto globalSetLayout = DescriptorSetLayout::Builder(device)
         .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS).build();
-
+        //.addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT).build();
+        
         std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
         for (int i = 0; i < globalDescriptorSets.size(); ++i) {
             auto bufferInfo = uboBuffers[i]->descriptorInfo();
+            
+            //.writeBuffer(1, &bufferInfo)
             DescriptorWriter(*globalSetLayout, *globalPool).writeBuffer(0, &bufferInfo)
             .build(globalDescriptorSets[i]);
         }
         
         SimpleRenderSystem simpleRenderSystem{device, renderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
+        PointRenderingSystem pointRenderSystem{device, renderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
         Camera camera{};
 
         auto viewerObject = GameObj::createGameObj();
@@ -101,13 +97,16 @@ namespace svk
                 
                 //update
                 GlobalUbo ubo{};
-                ubo.projection = camera.getProjection() * camera.getView();
+                ubo.projection = camera.getProjection();
+                ubo.view = camera.getView();
+                pointRenderSystem.update(frameInfo, ubo);
                 uboBuffers[frameIndex]->writeToBuffer(&ubo);
                 uboBuffers[frameIndex]->flush();
                 
                 //render
                 renderer.beginSwapChainRenderPass(commandBuffer);
                 simpleRenderSystem.renderGameObjs(frameInfo);
+                pointRenderSystem.render(frameInfo);
                 renderer.endSwapChainRenderPass(commandBuffer);
                 renderer.endFrame();
             }
@@ -124,12 +123,38 @@ namespace svk
         skull1.transform.scale = {0.05f, 0.05f, 0.05f};
         gameObjs.emplace(skull1.getId(), std::move(skull1));
 
+        model = Model::createModelFromFile(device, "models/skull/skull.obj");
+        auto skull2 = GameObj::createGameObj();
+        skull2.model = model;
+        skull2.color = {0, 0, 0};
+        skull2.transform.rotation = {glm::radians(90.0f), 0.0f, 0.0f};
+        skull2.transform.translation = {1.5f, 0.0f, 0.0f};
+        skull2.transform.scale = {0.05f, 0.05f, 0.05f};
+        gameObjs.emplace(skull2.getId(), std::move(skull2));
+
         model = Model::createModelFromFile(device, "models/quad.obj");
         auto plane = GameObj::createGameObj();
         plane.model = model;
-        plane.color = {0.5, 0.5, 0};
+        plane.color = {0, 0, 0};
         plane.transform.translation = {0.0f, 0.0f, 0.0f};
-        plane.transform.scale = {2.0f, 1.0f, 2.0f};
+        plane.transform.scale = {3.0f, 1.0f, 3.0f};
         gameObjs.emplace(plane.getId(), std::move(plane));
+        
+        std::vector<glm::vec3> lightColors{
+          {1.0f, 0.1f, 0.1f},
+          {1.0f, 1.0f, 0.1f},
+          {0.1f, 1.0f, 0.1f},
+          {0.1f, 1.0f, 1.0f},
+          {0.1f, 0.1f, 1.0f},
+          {1.0f, 0.1f, 1.0f},
+        };
+
+        for (int i = 0; i < lightColors.size(); ++i) {
+            auto pointLight = GameObj::makePointLight(0.2f);
+            pointLight.color = lightColors[i];
+            auto rotateLight = glm::rotate(glm::mat4(1.0f), (i * glm::two_pi<float>()) / lightColors.size(), {0.0f, -1.0f, 0.0f});
+            pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.0f, -1.0f, -1.0f, 1.0f));
+            gameObjs.emplace(pointLight.getId(), std::move(pointLight));
+        }
     }
 }

@@ -17,6 +17,10 @@ namespace svk {
         glm::mat4 mat4();
         glm::mat3 normalMatrix();
     };
+
+    struct PointLightComponent {
+        float lightIntensity = 10.0f;
+    };
     
     class GameObj {
     public:
@@ -28,6 +32,8 @@ namespace svk {
             return GameObj{currentId++};
         }
 
+        static GameObj makePointLight(float intensity = 1.0f, float radius = 0.1f, glm::vec3 color = glm::vec3{1.0f});
+
         GameObj(const GameObj &) = delete;
         GameObj &operator=(const GameObj &) = delete;
         GameObj(GameObj &&) = default;
@@ -36,8 +42,12 @@ namespace svk {
         id_t getId(){ return id; }
 
         std::shared_ptr<Model> model{};
+        //todo heeres the image
+        std::shared_ptr<VkImage> textureImage{};
+        
         glm::vec3 color{};
         TransfromComponent transform{};
+        std::unique_ptr<PointLightComponent> pointLight = nullptr;
         
     private:
         GameObj(id_t objId) : id{objId} {}

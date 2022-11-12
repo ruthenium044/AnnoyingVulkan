@@ -1,8 +1,7 @@
-// AnnoyingDavid.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 //refs
 //https://github.com/blurrypiano/littleVulkanEngine
-//
+//https://vulkan-tutorial.com/
+//https://learnopengl.com/
 
 #include <iostream>
 
