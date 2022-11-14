@@ -6,7 +6,6 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
-#include <array>
 #include <memory>
 #include <string>
 
@@ -39,7 +38,9 @@ namespace svk {
         Model(Device& dev, const Builder &builder);
         ~Model();
 
-        static std::unique_ptr<Model> createModelFromFile(Device& device, const std::string &filepath); 
+        static std::unique_ptr<Model> createModelFromFile(Device& device, const std::string &filepath);
+        
+        //uint32_t findMemoryType(uint32_t uint32, VkFlags properties);
         
         Model(const Model&) = delete;
         Model& operator=(const Model&) = delete;

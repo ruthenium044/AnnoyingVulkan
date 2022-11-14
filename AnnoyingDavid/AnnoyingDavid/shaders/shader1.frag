@@ -22,6 +22,7 @@ struct PointLight {
 layout(set = 0, binding = 0) uniform GlobalUbo {
     mat4 projection;
     mat4 view;
+    mat4 invView;
     vec4 ambientColor;
     PointLight pointLights[10];
     int numLights;
@@ -29,30 +30,33 @@ layout(set = 0, binding = 0) uniform GlobalUbo {
 
 void main() {
     //outColor = texture(texSampler, fragTexCoord);
-    
-    //vec3 ambient = ambientStrength * lightColor;
-    
+
     //diffuse
     vec3 diffuse = ubo.ambientColor.xyz * ubo.ambientColor.w;
+    vec3 specular = vec3(0.0);
     vec3 surfaceNormal = normalize(fragNormalWorld);
+    
+    vec3 cameraPosWorld = ubo.invView[3].xyz;
+    vec3 viewDir = normalize(cameraPosWorld - fragPosWorld);
     
     for (int i = 0; i < ubo.numLights; i++) {
         PointLight light = ubo.pointLights[i];
         vec3 lightDir = light.position.xyz - fragPosWorld;
         float attenuation = 1.0 / dot(lightDir, lightDir);
-        float cosAngIncidence = max(dot(surfaceNormal, normalize(lightDir)), 0.0f);
+        lightDir = normalize(lightDir);
+        
+        float cosAngIncidence = max(dot(surfaceNormal, lightDir), 0.0f);
         vec3 intensity = light.color.xyz * light.color.w * attenuation;
         diffuse += intensity * cosAngIncidence;
+        
+        //specular
+        vec3 halfAngle = normalize(lightDir * viewDir);
+        float blinnTerm = dot(surfaceNormal, halfAngle);
+        blinnTerm = clamp(blinnTerm, 0, 1);
+        blinnTerm = pow(blinnTerm, 32.0f);
+        specular += intensity * blinnTerm;
     }
-    
-    //vec3 ambientColor = ubo.ambientColor.xyz * ubo.ambientColor.w;
-    
-    //specular
-    //vec3 viewDir = normalize(ubo.lightPosition - fragPosWorld);
-    //vec3 reflectDir = reflect(lightDir, fragNormalWorld);
-    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64);
-    //vec3 specular = 0.2f * spec * lightColor;
-
-    vec3 result = (diffuse) * fragColor.xyz;
+ 
+    vec3 result = diffuse * fragColor + specular * fragColor;
     outColor = vec4(result, 1.0);
 }

@@ -30,13 +30,10 @@ namespace svk
         
         auto globalSetLayout = DescriptorSetLayout::Builder(device)
         .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS).build();
-        //.addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT).build();
         
         std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
         for (int i = 0; i < globalDescriptorSets.size(); ++i) {
             auto bufferInfo = uboBuffers[i]->descriptorInfo();
-            
-            //.writeBuffer(1, &bufferInfo)
             DescriptorWriter(*globalSetLayout, *globalPool).writeBuffer(0, &bufferInfo)
             .build(globalDescriptorSets[i]);
         }
@@ -99,14 +96,17 @@ namespace svk
                 GlobalUbo ubo{};
                 ubo.projection = camera.getProjection();
                 ubo.view = camera.getView();
+                ubo.inverseView = camera.getInverseView();
                 pointRenderSystem.update(frameInfo, ubo);
                 uboBuffers[frameIndex]->writeToBuffer(&ubo);
                 uboBuffers[frameIndex]->flush();
                 
                 //render
                 renderer.beginSwapChainRenderPass(commandBuffer);
+                
                 simpleRenderSystem.renderGameObjs(frameInfo);
                 pointRenderSystem.render(frameInfo);
+                
                 renderer.endSwapChainRenderPass(commandBuffer);
                 renderer.endFrame();
             }
@@ -132,13 +132,13 @@ namespace svk
         skull2.transform.scale = {0.05f, 0.05f, 0.05f};
         gameObjs.emplace(skull2.getId(), std::move(skull2));
 
-        model = Model::createModelFromFile(device, "models/quad.obj");
-        auto plane = GameObj::createGameObj();
-        plane.model = model;
-        plane.color = {0, 0, 0};
-        plane.transform.translation = {0.0f, 0.0f, 0.0f};
-        plane.transform.scale = {3.0f, 1.0f, 3.0f};
-        gameObjs.emplace(plane.getId(), std::move(plane));
+        //model = Model::createModelFromFile(device, "models/quad.obj");
+        //auto plane = GameObj::createGameObj();
+        //plane.model = model;
+        //plane.color = {0, 0, 0};
+        //plane.transform.translation = {0.0f, 0.0f, 0.0f};
+        //plane.transform.scale = {3.0f, 1.0f, 3.0f};
+        //gameObjs.emplace(plane.getId(), std::move(plane));
         
         std::vector<glm::vec3> lightColors{
           {1.0f, 0.1f, 0.1f},

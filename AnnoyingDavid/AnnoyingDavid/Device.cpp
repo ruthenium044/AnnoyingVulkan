@@ -369,7 +369,7 @@ namespace svk {
         }
         vkBindBufferMemory(device, buffer, bufferMemory, 0);
     }
-
+    
     VkCommandBuffer Device::beginSingleTimeCommands() {
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

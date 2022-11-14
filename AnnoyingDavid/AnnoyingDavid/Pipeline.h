@@ -6,6 +6,7 @@
 
 namespace svk {
     struct PipelineConfigInfo {
+        PipelineConfigInfo() = default;
         std::vector<VkVertexInputBindingDescription> bindingDescriptions{};
         std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
         VkPipelineViewportStateCreateInfo viewportInfo;
@@ -33,6 +34,7 @@ namespace svk {
 
         void bind(VkCommandBuffer commandBuffer);
         static void defaultPipelineConfigInfor(PipelineConfigInfo& configInfo);
+        static void enableAlphaBlending(PipelineConfigInfo& configInfo);
     private:
         static std::vector<char> readFile(const std::string& filepath);
 

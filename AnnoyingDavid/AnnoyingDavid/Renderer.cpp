@@ -1,5 +1,6 @@
 ﻿#include "Renderer.h"
 
+#include <array>
 #include <stdexcept>
 
 namespace svk {

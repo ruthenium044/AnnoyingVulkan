@@ -3,8 +3,13 @@
 #define TINYOBJLOADER_IMPLEMENTATION   
 #include "tiny_obj_loader.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
+
+#include "Renderer.h"
 
 namespace std {
     template <>
@@ -15,7 +20,7 @@ namespace std {
             return seed;
         }
     };
-};
+}
 
 namespace svk {
     std::vector<VkVertexInputBindingDescription> Model::Vertex::getBindingDescriptions() {
@@ -102,7 +107,7 @@ namespace svk {
 
         device.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
     }
-
+    
     void Model::Builder::loadModel(const std::string& filepath) {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
