@@ -103,8 +103,17 @@ namespace svk
                 FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera,
                     globalDescriptorSets[frameIndex], *framePools[frameIndex],
                 gameObjectManager.gameObjects};
+
+                //todo what the fuck
+                gameObjectManager.gameObjects.at(1).transform.rotation =
+                    {glm::radians(45.0f * frameTime ), 0.0f, 0.0f};
                 
                 //update
+                auto rotation = glm::rotate(glm::mat4(1.0f), frameInfo.frameTime,
+                    {0.0f, -1.0f, 0.0f});
+                auto& obj = gameObjectManager.gameObjects.at(gameObjectManager.usedIds.at(0));
+                obj.transform.translation = glm::vec3(rotation * glm::vec4(obj.transform.translation, 1.0f));
+                
                 GlobalUbo ubo{};
                 ubo.projection = camera.getProjection();
                 ubo.view = camera.getView();
@@ -112,7 +121,10 @@ namespace svk
                 pointRenderSystem.update(frameInfo, ubo);
                 uboBuffers[frameIndex]->writeToBuffer(&ubo);
                 uboBuffers[frameIndex]->flush();
+
                 gameObjectManager.updateBuffer(frameIndex);
+
+                
                 
                 //render
                 renderer.beginSwapChainRenderPass(commandBuffer);
@@ -139,8 +151,10 @@ namespace svk
         model = Model::createModelFromFile(device, "models/skull/skull.obj");
         auto& skull2 = gameObjectManager.createGameObject();
         skull2.model = model;
+        skull2.diffuseMap = texture;
         skull2.color = {0, 0, 0};
         skull2.transform.rotation = {glm::radians(90.0f), 0.0f, 0.0f};
+        
         skull2.transform.translation = {1.5f, 0.0f, 0.0f};
         skull2.transform.scale = {0.05f, 0.05f, 0.05f};
 

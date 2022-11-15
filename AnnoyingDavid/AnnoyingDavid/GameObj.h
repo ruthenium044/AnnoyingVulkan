@@ -23,11 +23,10 @@ namespace svk {
     struct PointLightComponent {
         float lightIntensity = 10.0f;
     };
-
     
     struct GameObjectBufferData {
-        glm::mat4 modelMatrix{1.f};
-        glm::mat4 normalMatrix{1.f};
+        glm::mat4 modelMatrix{1.0f};
+        glm::mat4 normalMatrix{1.0f};
     };
 
     class GameObjectManager; 
@@ -37,12 +36,6 @@ namespace svk {
         using id_t = unsigned int;
         using Map = std::unordered_map<id_t, GameObj>;
         
-        //static GameObj createGameObj() {
-        //    static id_t currentId = 0;
-        //    return GameObj{currentId++};
-        //}
-        //
-        //static GameObj makePointLight(float intensity = 1.0f, float radius = 0.1f, glm::vec3 color = glm::vec3{1.0f});
         GameObj(GameObj &&) = default;
         GameObj(const GameObj &) = delete;
         GameObj &operator=(const GameObj &) = delete;
@@ -63,9 +56,7 @@ namespace svk {
         GameObj(id_t objId, const GameObjectManager &manager);
 
         id_t id;
-        
         const GameObjectManager &gameObjectManger;
-
         friend class GameObjectManager;
     };
 
@@ -81,18 +72,18 @@ namespace svk {
 
         GameObj &createGameObject() {
             assert(currentId < MAX_GAME_OBJECTS && "Max game object count exceeded!");
+            usedIds.push_back(currentId);
             auto gameObject = GameObj{currentId++, *this};
+            
             auto gameObjectId = gameObject.getId();
             gameObject.diffuseMap = textureDefault;
             gameObjects.emplace(gameObjectId, std::move(gameObject));
             return gameObjects.at(gameObjectId);
         }
 
-        GameObj &makePointLight(
-            float intensity = 10.f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
+        GameObj &makePointLight(float intensity = 10.0f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.0f));
 
-        VkDescriptorBufferInfo getBufferInfoForGameObject(
-            int frameIndex, GameObj::id_t gameObjectId) const {
+        VkDescriptorBufferInfo getBufferInfoForGameObject(int frameIndex, GameObj::id_t gameObjectId) const {
             return uboBuffers[frameIndex]->descriptorInfoForIndex(gameObjectId);
         }
 
@@ -100,6 +91,7 @@ namespace svk {
 
         GameObj::Map gameObjects{};
         std::vector<std::unique_ptr<Buffer>> uboBuffers{SwapChain::MAX_FRAMES_IN_FLIGHT};
+        std::vector<GameObj::id_t> usedIds;
 
     private:
         GameObj::id_t currentId = 0;

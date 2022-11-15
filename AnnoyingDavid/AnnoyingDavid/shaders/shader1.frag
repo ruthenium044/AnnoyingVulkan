@@ -55,11 +55,11 @@ void main() {
         vec3 halfAngle = normalize(lightDir * viewDir);
         float blinnTerm = dot(surfaceNormal, halfAngle);
         blinnTerm = clamp(blinnTerm, 0, 1);
-        blinnTerm = pow(blinnTerm, 32.0f);
+        blinnTerm = pow(blinnTerm, 8.0f);
         specular += intensity * blinnTerm;
     }
  
     vec3 color = texture(diffuseMap, fragUv).xyz;
-    vec3 result = diffuse * color + specular * fragColor;
+    vec3 result = diffuse * color + specular * color;
     outColor = vec4(result, 1.0);
 }

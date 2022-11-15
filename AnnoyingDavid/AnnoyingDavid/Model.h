@@ -40,8 +40,6 @@ namespace svk {
 
         static std::unique_ptr<Model> createModelFromFile(Device& device, const std::string &filepath);
         
-        //uint32_t findMemoryType(uint32_t uint32, VkFlags properties);
-        
         Model(const Model&) = delete;
         Model& operator=(const Model&) = delete;
 

@@ -13,7 +13,7 @@ namespace svk {
 
         SimpleRenderSystem(const SimpleRenderSystem&) = delete;
         SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
-
+        
         void renderGameObjs(FrameInfo &frameInfo);
     private:
         
