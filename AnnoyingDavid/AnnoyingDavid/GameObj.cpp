@@ -1,5 +1,7 @@
 ﻿#include "GameObj.h"
 
+#include <numeric>
+
 namespace svk {
 
     glm::mat4 TransfromComponent::mat4() {
@@ -51,13 +53,50 @@ namespace svk {
                     invScale.z * (-s2),
                     invScale.z * (c1 * c2)}};
     }
-
-    GameObj GameObj::makePointLight(float intensity, float radius, glm::vec3 color) {
-        GameObj gameObj = GameObj::createGameObj();
+    
+    GameObj& GameObjectManager::makePointLight(float intensity, float radius, glm::vec3 color) {
+        auto& gameObj = createGameObject();
         gameObj.color = color;
         gameObj.transform.scale.x = radius;
         gameObj.pointLight = std::make_unique<PointLightComponent>();
         gameObj.pointLight->lightIntensity = intensity;
         return gameObj;
     }
+
+    GameObjectManager::GameObjectManager(Device& device) {
+        int alignment = std::lcm(device.properties.limits.nonCoherentAtomSize,
+            device.properties.limits.minUniformBufferOffsetAlignment);
+        for (int i = 0; i < uboBuffers.size(); i++) {
+            uboBuffers[i] = std::make_unique<Buffer>(
+                device,
+                sizeof(GameObjectBufferData),
+                GameObjectManager::MAX_GAME_OBJECTS,
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+                alignment);
+            uboBuffers[i]->map();
+        }
+        textureDefault = Texture::createTextureFromFile(device, "textures/missing.jpg");
+    }
+
+    void GameObjectManager::updateBuffer(int frameIndex) {
+        // copy model matrix and normal matrix for each gameObj into
+        // buffer for this frame
+        for (auto& kv : gameObjects) {
+            auto& obj = kv.second;
+            GameObjectBufferData data{};
+            data.modelMatrix = obj.transform.mat4();
+            data.normalMatrix = obj.transform.normalMatrix();
+            uboBuffers[frameIndex]->writeToIndex(&data, kv.first);
+        }
+        uboBuffers[frameIndex]->flush();
+    }
+
+    VkDescriptorBufferInfo GameObj::getBufferInfo(int frameIndex) {
+        return gameObjectManger.getBufferInfoForGameObject(frameIndex, id);
+    }
+
+    GameObj::GameObj(id_t objId, const GameObjectManager& manager)
+    : id{objId}, gameObjectManger{manager} {}
+    
 }

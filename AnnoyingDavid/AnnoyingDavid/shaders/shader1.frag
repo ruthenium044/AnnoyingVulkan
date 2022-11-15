@@ -6,6 +6,7 @@
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec3 fragPosWorld;
 layout(location = 2) in vec3 fragNormalWorld;
+layout(location = 3) in vec2 fragUv;
 
 layout(location = 0) out vec4 outColor;
 
@@ -28,9 +29,10 @@ layout(set = 0, binding = 0) uniform GlobalUbo {
     int numLights;
 } ubo;
 
-void main() {
-    //outColor = texture(texSampler, fragTexCoord);
+layout (set = 1, binding = 1) uniform sampler2D diffuseMap;
 
+void main() {
+    
     //diffuse
     vec3 diffuse = ubo.ambientColor.xyz * ubo.ambientColor.w;
     vec3 specular = vec3(0.0);
@@ -57,6 +59,7 @@ void main() {
         specular += intensity * blinnTerm;
     }
  
-    vec3 result = diffuse * fragColor + specular * fragColor;
+    vec3 color = texture(diffuseMap, fragUv).xyz;
+    vec3 result = diffuse * color + specular * fragColor;
     outColor = vec4(result, 1.0);
 }

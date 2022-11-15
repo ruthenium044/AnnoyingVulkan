@@ -92,7 +92,7 @@ namespace svk {
      * Flush a memory range of the buffer to make it visible to the device
      *
      * @note Only required for non-coherent memory
-     *
+     * 
      * @param size (Optional) Size of the memory range to flush. Pass VK_WHOLE_SIZE to flush the
      * complete buffer range.
      * @param offset (Optional) Byte offset from beginning

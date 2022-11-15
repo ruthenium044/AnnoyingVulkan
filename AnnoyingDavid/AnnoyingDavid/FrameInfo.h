@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Buffer.h"
 #include "Camera.h"
+#include "Descriptors.h"
 #include "GameObj.h"
 
 namespace svk {
@@ -23,6 +24,7 @@ namespace svk {
         VkCommandBuffer commandBuffer;
         Camera &camera;
         VkDescriptorSet globalDescriptorSet;
+        DescriptorPool &frameDescriptorPool;
         GameObj::Map &gameObjs;
     };
 }

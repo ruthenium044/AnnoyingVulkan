@@ -30,6 +30,7 @@ namespace svk {
         Renderer renderer{window, device};
 
         std::unique_ptr<DescriptorPool> globalPool{};
-        GameObj::Map gameObjs;
+        std::vector<std::unique_ptr<DescriptorPool>> framePools;
+        GameObjectManager gameObjectManager{device};
     };
 }

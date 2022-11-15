@@ -57,10 +57,13 @@ namespace svk
         VkCommandBuffer beginSingleTimeCommands();
         void endSingleTimeCommands(VkCommandBuffer commandBuffer);
         void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-        void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+        void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
 
         void createImageWithInfo( const VkImageCreateInfo &imageInfo,
         VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
+
+        void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout,
+        uint32_t mipLevels = 1, uint32_t layerCount = 1);
 
         VkPhysicalDeviceProperties properties{};
         
