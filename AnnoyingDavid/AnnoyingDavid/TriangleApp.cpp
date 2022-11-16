@@ -105,15 +105,15 @@ namespace svk
                 gameObjectManager.gameObjects};
 
                 //todo what the fuck
-                gameObjectManager.gameObjects.at(1).transform.rotation =
-                    {glm::radians(45.0f * frameTime ), 0.0f, 0.0f};
+                //gameObjectManager.gameObjects.at(1).transform.rotation =
+                //    {glm::radians(45.0f * frameTime ), 0.0f, 0.0f};
+                //
+                //auto rotation = glm::rotate(glm::mat4(1.0f), frameInfo.frameTime,
+                //    {0.0f, -1.0f, 0.0f});
+                //auto& obj = gameObjectManager.gameObjects.at(gameObjectManager.usedIds.at(0));
+                //obj.transform.translation = glm::vec3(rotation * glm::vec4(obj.transform.translation, 1.0f));
                 
                 //update
-                auto rotation = glm::rotate(glm::mat4(1.0f), frameInfo.frameTime,
-                    {0.0f, -1.0f, 0.0f});
-                auto& obj = gameObjectManager.gameObjects.at(gameObjectManager.usedIds.at(0));
-                obj.transform.translation = glm::vec3(rotation * glm::vec4(obj.transform.translation, 1.0f));
-                
                 GlobalUbo ubo{};
                 ubo.projection = camera.getProjection();
                 ubo.view = camera.getView();
@@ -123,8 +123,6 @@ namespace svk
                 uboBuffers[frameIndex]->flush();
 
                 gameObjectManager.updateBuffer(frameIndex);
-
-                
                 
                 //render
                 renderer.beginSwapChainRenderPass(commandBuffer);
@@ -138,40 +136,54 @@ namespace svk
     }
     
     void TriangleApp::loadGameObjs() {
-        std::shared_ptr<Model> model = Model::createModelFromFile(device, "models/skull/skull.obj");
-        auto& skull1 = gameObjectManager.createGameObject();
-        std::shared_ptr<Texture> texture = Texture::createTextureFromFile(device, "models/skull/skull.jpg");
-        skull1.model = model;
-        skull1.diffuseMap = texture;
-        skull1.color = {0, 0, 0};
-        skull1.transform.rotation = {glm::radians(90.0f), 0.0f, 0.0f};
-        skull1.transform.translation = {0.0f, 0.0f, 0.0f};
-        skull1.transform.scale = {0.05f, 0.05f, 0.05f};
-
-        model = Model::createModelFromFile(device, "models/skull/skull.obj");
-        auto& skull2 = gameObjectManager.createGameObject();
-        skull2.model = model;
-        skull2.diffuseMap = texture;
-        skull2.color = {0, 0, 0};
-        skull2.transform.rotation = {glm::radians(90.0f), 0.0f, 0.0f};
         
-        skull2.transform.translation = {1.5f, 0.0f, 0.0f};
-        skull2.transform.scale = {0.05f, 0.05f, 0.05f};
+        std::shared_ptr model = Model::createModelFromFile(device, "models/skull/skull.obj");
+        std::shared_ptr texture = Texture::createTextureFromFile(device, "models/skull/skull.jpg");
+        glm::vec3 scale = {0.06f, 0.06f, 0.06f};
 
-        model = Model::createModelFromFile(device, "models/skull/skull.obj");
-        auto& skull3 = gameObjectManager.createGameObject();
-        skull3.model = model;
-        skull3.color = {0, 0, 0};
-        skull3.transform.rotation = {glm::radians(90.0f), 0.0f, 0.0f};
-        skull3.transform.translation = {-1.5f, 0.0f, 0.0f};
-        skull3.transform.scale = {0.05f, 0.05f, 0.05f};
+        float numPerRow = 12.0f;
+        float numRows = 6;
+        float angle = glm::two_pi<float>() / numPerRow;
+        float radius = 2.0f;
+        float radiusDelta = 0.3f;
+       
+        std::vector<TransfromComponent> skullTransforms = {};
+        for (int j = 0; j < numRows; j ++) {
+            for (int i = 0; i < numPerRow; ++i) {
+                skullTransforms.push_back({
+                    {cos(i * angle) * (radius - j * radiusDelta), -1.3f * j , sin(i * angle) * (radius - j * radiusDelta) }, scale,
+                    {glm::radians(90.0f - 5.0f * j), glm::radians(-90.0f) + (numPerRow - i) * angle, 0.0f}});
+            }
+            numPerRow--;
+            angle = glm::two_pi<float>() / numPerRow;
+        }
+        
+        for (auto& transform : skullTransforms) {
+            auto& skull1 = gameObjectManager.createGameObject();
+            skull1.model = model;
+            skull1.diffuseMap = texture;
+            skull1.transform = transform;
+        }
+        
+        //todo push in the obj files !
+        model = Model::createModelFromFile(device, "models/quad.obj");
+        texture = Texture::createTextureFromFile(device, "textures/bg.JPG");
+        scale = {6.0f, 6.0f, 6.0f};
+        std::vector<TransfromComponent> planeTransforms = {
+            {{0.0f, 0.0f, 0.0f}, scale, {glm::radians(0.0f), 0.0f, 0.0f}},
+            {{0.0f, -scale.y, scale.z}, scale, {glm::radians(90.0f), 0.0f, 0.0f}},
+            {{0.0f, -scale.y * 2, 0.0f}, scale, {glm::radians(180.0f), 0.0f, 0.0f}},
+            {{scale.x, -scale.y, 0.0f}, scale, {glm::radians(90.0f), glm::radians(90.0f), 0.0f}},
+            {{-scale.x, -scale.y, 0.0f}, scale, {glm::radians(90.0f), glm::radians(-90.0f), 0.0f}},
+            {{0.0f, -scale.y, -scale.z}, scale, {glm::radians(90.0f), glm::radians(180.0f), 0.0f}},
+        };
 
-        //model = Model::createModelFromFile(device, "models/quad.obj");
-        //auto plane = GameObj::createGameObj();
-        //plane.model = model;
-        //plane.color = {0, 0, 0};
-        //plane.transform.translation = {0.0f, 0.0f, 0.0f};
-        //plane.transform.scale = {3.0f, 1.0f, 3.0f};
+        for (auto& transform : planeTransforms) {
+            auto& plane = gameObjectManager.createGameObject();
+            plane.model = model;
+            plane.diffuseMap = texture;
+            plane.transform = transform;
+        }
         
         std::vector<glm::vec3> lightColors{
           {1.0f, 0.1f, 0.1f},
@@ -185,8 +197,9 @@ namespace svk
         for (int i = 0; i < lightColors.size(); ++i) {
             auto& pointLight = gameObjectManager.makePointLight(0.2f);
             pointLight.color = lightColors[i];
+            glm::vec3 rotation = {glm::radians(90.0f), 0.0f, 0.0f};
             auto rotateLight = glm::rotate(glm::mat4(1.0f), (i * glm::two_pi<float>()) / lightColors.size(), {0.0f, -1.0f, 0.0f});
-            pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.0f, -1.0f, -1.0f, 1.0f));
+            pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-2.0f, -2.0f, -2.0f, 1.0f));
         }
     }
 }
