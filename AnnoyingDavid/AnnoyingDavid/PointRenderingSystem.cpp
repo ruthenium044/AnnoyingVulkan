@@ -31,7 +31,6 @@ namespace svk {
                 continue;
             }
             obj.transform.translation = glm::vec3(rotateLight * glm::vec4(obj.transform.translation, 1.0f));
-            obj.transform.translation.y = obj.transform.translation.y;// * std::clamp((1 + frameInfo.frameTime), 0.0f, 5.0f);
             
             ubo.pointLights[lightIndex].position = glm::vec4(obj.transform.translation, 1.0f);
             ubo.pointLights[lightIndex].color = glm::vec4(obj.color, obj.pointLight->lightIntensity);
