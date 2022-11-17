@@ -104,7 +104,7 @@ namespace svk
                     globalDescriptorSets[frameIndex], *framePools[frameIndex],
                 gameObjectManager.gameObjects};
 
-                //todo what the fuck
+                //todo how to correctly update
                 //gameObjectManager.gameObjects.at(1).transform.rotation =
                 //    {glm::radians(45.0f * frameTime ), 0.0f, 0.0f};
                 //
@@ -139,6 +139,7 @@ namespace svk
         
         std::shared_ptr model = Model::createModelFromFile(device, "models/skull/skull.obj");
         std::shared_ptr texture = Texture::createTextureFromFile(device, "models/skull/skull.jpg");
+        std::shared_ptr specTexture = Texture::createTextureFromFile(device, "models/skull/skullSpec.png");
         glm::vec3 scale = {0.06f, 0.06f, 0.06f};
 
         float numPerRow = 12.0f;
@@ -162,10 +163,10 @@ namespace svk
             auto& skull1 = gameObjectManager.createGameObject();
             skull1.model = model;
             skull1.diffuseMap = texture;
+            //skull1.specularMap = specTexture;
             skull1.transform = transform;
         }
         
-        //todo push in the obj files !
         model = Model::createModelFromFile(device, "models/quad.obj");
         texture = Texture::createTextureFromFile(device, "textures/bg.JPG");
         scale = {6.0f, 6.0f, 6.0f};
@@ -195,7 +196,7 @@ namespace svk
         };
 
         for (int i = 0; i < lightColors.size(); ++i) {
-            auto& pointLight = gameObjectManager.makePointLight(0.2f);
+            auto& pointLight = gameObjectManager.makePointLight(0.5f);
             pointLight.color = lightColors[i];
             glm::vec3 rotation = {glm::radians(90.0f), 0.0f, 0.0f};
             auto rotateLight = glm::rotate(glm::mat4(1.0f), (i * glm::two_pi<float>()) / lightColors.size(), {0.0f, -1.0f, 0.0f});

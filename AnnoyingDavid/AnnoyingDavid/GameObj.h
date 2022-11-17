@@ -21,7 +21,7 @@ namespace svk {
     };
 
     struct PointLightComponent {
-        float lightIntensity = 10.0f;
+        float lightIntensity = 0.5f;
     };
     
     struct GameObjectBufferData {
@@ -47,6 +47,8 @@ namespace svk {
         
         std::shared_ptr<Model> model{};
         std::shared_ptr<Texture> diffuseMap = nullptr;
+        
+        std::shared_ptr<Texture> specularMap = nullptr;
         
         glm::vec3 color{};
         TransfromComponent transform{};

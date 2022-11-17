@@ -30,10 +30,16 @@ namespace svk {
             }
 
             auto bufferInfo = obj.getBufferInfo(frameInfo.frameIndex);
+            
             auto imageInfo = obj.diffuseMap->getImageInfo();
+            //auto imageInfo2 = obj.specularMap->getImageInfo();
+            
             VkDescriptorSet gameObjectDescriptorSet;
             DescriptorWriter(*renderSystemLayout, frameInfo.frameDescriptorPool).writeBuffer(0, &bufferInfo)
                 .writeImage(1, &imageInfo).build(gameObjectDescriptorSet);
+
+            //DescriptorWriter(*renderSystemLayout, frameInfo.frameDescriptorPool).writeBuffer(0, &bufferInfo)
+           //     .writeImage(2, &imageInfo2).build(gameObjectDescriptorSet);
 
             vkCmdBindDescriptorSets(frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                 pipelineLayout, 1, 1,  &gameObjectDescriptorSet, 0, nullptr);
