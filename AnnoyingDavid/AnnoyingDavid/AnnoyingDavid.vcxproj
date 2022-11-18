@@ -152,7 +152,6 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Descriptors.cpp" />
     <ClCompile Include="Device.cpp" />
-    <ClCompile Include="FrameInfo.cpp" />
     <ClCompile Include="GameObj.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MovementController.cpp" />

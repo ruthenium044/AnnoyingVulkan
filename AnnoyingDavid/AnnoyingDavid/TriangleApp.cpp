@@ -66,7 +66,8 @@ namespace svk
                 case SDL_WINDOWEVENT: {
                     switch (e.window.event) {
                     case SDL_WINDOWEVENT_SIZE_CHANGED: 
-                        //recreateSwapChain();
+                        //todo recreate swap chain heere
+                        //renderer.recreateSwapChain();
                         break;
                     case SDL_WINDOWEVENT_CLOSE: 
                         e.type = SDL_QUIT;
@@ -142,21 +143,23 @@ namespace svk
         std::shared_ptr specTexture = Texture::createTextureFromFile(device, "models/skull/skullSpec.png");
         glm::vec3 scale = {0.06f, 0.06f, 0.06f};
 
-        float numPerRow = 12.0f;
-        float numRows = 6;
-        float angle = glm::two_pi<float>() / numPerRow;
-        float radius = 2.0f;
+        int numPerRow = 9;
+        int numRows = numPerRow - 2;
+        float angle = glm::two_pi<float>() / static_cast<float>(numPerRow);
         float radiusDelta = 0.3f;
+        float radius = numRows * radiusDelta + radiusDelta;
        
         std::vector<TransfromComponent> skullTransforms = {};
         for (int j = 0; j < numRows; j ++) {
             for (int i = 0; i < numPerRow; ++i) {
+                
+                
                 skullTransforms.push_back({
                     {cos(i * angle) * (radius - j * radiusDelta), -1.3f * j , sin(i * angle) * (radius - j * radiusDelta) }, scale,
                     {glm::radians(90.0f - 5.0f * j), glm::radians(-90.0f) + (numPerRow - i) * angle, 0.0f}});
             }
             numPerRow--;
-            angle = glm::two_pi<float>() / numPerRow;
+            angle = glm::two_pi<float>() / static_cast<float>(numPerRow);
         }
         
         for (auto& transform : skullTransforms) {
@@ -196,11 +199,11 @@ namespace svk
         };
 
         for (int i = 0; i < lightColors.size(); ++i) {
-            auto& pointLight = gameObjectManager.makePointLight(0.5f);
+            auto& pointLight = gameObjectManager.makePointLight(0.1f);
             pointLight.color = lightColors[i];
             glm::vec3 rotation = {glm::radians(90.0f), 0.0f, 0.0f};
             auto rotateLight = glm::rotate(glm::mat4(1.0f), (i * glm::two_pi<float>()) / lightColors.size(), {0.0f, -1.0f, 0.0f});
-            pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-2.0f, -2.0f, -2.0f, 1.0f));
+            pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-2.0f, -3.0f, -2.0f, 1.0f));
         }
     }
 }
