@@ -2,7 +2,7 @@
 
 Mini project following tutorials and learning new things about graphics programming
 
-#Controls:
+## Controls:
 
 moveLeft = A;
 
