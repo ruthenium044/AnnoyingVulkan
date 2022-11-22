@@ -8,6 +8,7 @@ namespace svk {
     public:
         static const int MAX_FRAMES_IN_FLIGHT = 2;
 
+        SwapChain(decltype(nullptr));
         SwapChain(Device& deviceRef, VkExtent2D windowExtent);
         SwapChain(Device& deviceRef, VkExtent2D windowExtent, std::shared_ptr<SwapChain> prev);
         ~SwapChain();

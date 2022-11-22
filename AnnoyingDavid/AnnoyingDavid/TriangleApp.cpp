@@ -67,6 +67,10 @@ namespace svk
                     switch (e.window.event) {
                     case SDL_WINDOWEVENT_SIZE_CHANGED: 
                         //todo recreate swap chain heere
+                        // Block until it is back
+                        // recreate swapchain
+                        // recreate depth resource
+                        // recreate frame buffers
                         //renderer.recreateSwapChain();
                         break;
                     case SDL_WINDOWEVENT_CLOSE: 

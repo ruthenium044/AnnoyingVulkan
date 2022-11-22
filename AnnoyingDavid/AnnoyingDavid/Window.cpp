@@ -19,7 +19,7 @@ namespace svk {
     void Window::initWindow() {
         SDL_Init(SDL_INIT_EVERYTHING);
         window = SDL_CreateWindow("NOt a game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                  width, height, SDL_WINDOW_VULKAN | SDL_WINDOW_SHOWN);
+                                  width, height, SDL_WINDOW_VULKAN | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
     }
 }
