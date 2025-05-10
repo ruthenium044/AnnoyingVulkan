@@ -2,6 +2,9 @@
 
 Mini project following tutorials and learning new things about graphics programming
 
+![image](https://github.com/user-attachments/assets/d79d11c3-bb0b-48e0-9ff4-94ed369bbb90)
+
+
 For learning purposes and to develop my graphics programming knowledge, I have put together a small Vulkan engine. I used online resources to teach myself about the topic and learn the needed things on the go. 
 
 The whole process gave me lots of insights into how such engines work and how to use them. The main challenge was to configure Vulkan. The boilerplate is the biggest challenge of not knowing how to design the data structures to manage the application reasonably. Therefore, I had to refactor it a few times to get a satisfying result.
